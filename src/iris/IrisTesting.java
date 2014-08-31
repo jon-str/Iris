@@ -1,3 +1,8 @@
+/* JON-STR */
+/* THIS IS PURE SLOP
+ * 	- WILL BE CLEANING IN THE MORNING
+ */
+
 package iris;
 
 import iris.IrisBlock.Tetrominoe;
