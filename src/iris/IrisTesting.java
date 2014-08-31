@@ -260,14 +260,7 @@ public class IrisTesting extends Bitmap {
 			}
 			return false;
 			
-		} else if(keys[KeyEvent.VK_UP]) {
-			if(canMove(curX, curY - 1)) {
-				curY--;
-				return true;
-			}
-			return true;
-			
-		} else if(keys[KeyEvent.VK_SPACE]) {
+		} else if(keys[KeyEvent.VK_SPACE] || keys[KeyEvent.VK_UP]) {
 			
 			if(lR) {
 				curPeice.testRot(true);

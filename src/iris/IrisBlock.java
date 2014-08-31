@@ -59,7 +59,7 @@ public class IrisBlock {
 			for(int i = 0; i < 4; ++i) {
 				int x = this.getX(i);
 				int y = this.getY(i);
-				this.setX(i, y); 
+				this.setX(i, -y); 
 				this.setY(i, -x);
 				
 				System.out.println("i: " + i + ", x: " + -x + ", y: " + y);
@@ -74,7 +74,7 @@ public class IrisBlock {
 			for(int i = 0; i < 4; ++i) {
 				int x = this.getX(i);
 				int y = this.getY(i);
-				this.setX(i, -y); 
+				this.setX(i, y); 
 				this.setY(i, x);
 				
 				System.out.println("i: " + i + ", x: " + -x + ", y: " + y);
