@@ -21,7 +21,7 @@ public class Display extends Canvas {
 	private final int height;
 	private String windowTitle;
 	
-	private static InputHandler input;
+	public static InputHandler input;
 	
 	private BufferedImage image;
 	private int[] pixels;
