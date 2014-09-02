@@ -9,6 +9,7 @@ import java.awt.event.KeyEvent;
 
 import com.jonstr.iris.engine.Display;
 import com.jonstr.iris.engine.Engine;
+import com.jonstr.iris.engine.InputHandler.IrisEvent;
 import com.jonstr.iris.game.IrisBlock.Tetrominoe;
 import com.jonstr.iris.rendering.Bitmap;
 
@@ -36,36 +37,38 @@ public class IrisComponent extends Bitmap {
 		grid = new Tetrominoe[gridWidth * gridHeight];
 		currShape = new IrisBlock();
 		
-		curX = 0;
-		curY = 0;
-		
 		numLinesRemoved = 0;
 		
 		clearGrid();
 		newShape();
 	}
 	
-	public void test(Engine engine) { /*** TODO ***/ //THIS REALLY SUCKS
+	public void update(Engine engine, boolean shouldAdvance, boolean inputDraw) { /*** TODO ***/ //THIS REALLY SUCKS
 		//ADD SOME DELTA FOR THE KEY REPEAT TIME ADJUSTMENT, ALLOW
 		//RENDERER TO DRAW FIXED FRAME RATE AND REDRAW SHAPE WHEN ROTATED BUT DONT ADVANCE CLOCK
 		this.fill(0xFF000000);
 		drawGridLines();
 		drawFallenShapes();
+		drawShape();
 		
-		this.handleInput(Display.getKeys());
-		
-		if(canMove(curX, curY + 1)) {
+		if(inputDraw) {
 			drawShape();
-			curY++;
-		} else {
-			drawShape();
-			finishFalling(engine);
-			removeLines();
-			drawFallenShapes();
-			newShape();
-			return;
+		} else if(shouldAdvance) {
+			if(canMove(curX, curY + 1)) {
+				drawShape();
+				curY++;
+			} else {
+				for(int i = 0; i < 4; ++i) {
+					System.out.println("Couldn't move x: " + (this.currShape.getX(i) + curX) + ", y: " + (this.currShape.getY(i) + curY));
+				}
+				drawShape();
+				finishFalling(engine);
+				removeLines();
+				drawFallenShapes();
+				newShape();
+				return;
+			}
 		}
-		
 	}
 	
 	private void removeLines() {
@@ -117,8 +120,9 @@ public class IrisComponent extends Bitmap {
 		}
 	}
 	
-	public boolean canMove(int newX, int newY) {
+	private boolean canMove(int newX, int newY) {
 		if(currShape.getMaxY() + newY > 15) {
+			System.out.println("If bug, this is bad... 1");
 			return false;
 		}
 		
@@ -127,6 +131,7 @@ public class IrisComponent extends Bitmap {
 			int y = currShape.getY(i) + newY;
 			
 			if(x < 0 || x >= gridWidth || y < 0 || y >= gridHeight) {
+				System.out.println("If bug, this is bad... 2");
 				return false;
 			}
 			
@@ -151,7 +156,13 @@ public class IrisComponent extends Bitmap {
 		}
 	}
 	
-	public void drawCurrShape(int column, int row) {
+	private void newShape() {
+		currShape.setRandomBlockShape();
+		curX = gridWidth / 2 - 1;
+		curY = 0;
+	}
+	
+	private void drawCurrShape(int column, int row) {
 		drawGridLines();
 		
 		int xPix = ((column * blockSizeSquared));
@@ -166,7 +177,7 @@ public class IrisComponent extends Bitmap {
 		}
 	}
 	
-	public void drawFallenShapes() {
+	private void drawFallenShapes() {
 		for(int y = 0; y < this.getHeight(); y++) {
 			for(int x = 0; x < this.getWidth(); x++) {
 				if(!isGridLine(x, y)) {
@@ -185,18 +196,14 @@ public class IrisComponent extends Bitmap {
 		}
 	}
 	
-	public void newShape() {
-		currShape.setRandomBlockShape();
-		curX = gridWidth / 2 - 1;
-		curY = 0;
-	}
+	private Tetrominoe shapeAt(int x, int y) { return grid[(y * gridWidth) + x]; }
+	private void setShapeAt(Tetrominoe shape, int x, int y) { grid[(y * gridWidth) + x] = shape; }
 	
-	public Tetrominoe shapeAt(int x, int y) { return grid[(y * gridWidth) + x]; }
-	public void setShapeAt(Tetrominoe shape, int x, int y) { grid[(y * gridWidth) + x] = shape; }
-	
+	/*
 	public void update(Engine engine) {
-		test(engine);
+		//test(engine);
 	}
+	*/
 	
 	private void clearGrid() { 
 		for(int i = 0; i < gridWidth * gridHeight; ++i) {
@@ -220,36 +227,48 @@ public class IrisComponent extends Bitmap {
 		return false;
 	}
 
-	public boolean handleInput(boolean[] keys) {
+public boolean handleInput(boolean[] keys) {
+		IrisEvent lastEvent = Display.input.getLastEvent();
+		IrisEvent thisEvent = IrisEvent.NoEvent;
+		
 		if(keys[KeyEvent.VK_LEFT]) {
+			thisEvent = IrisEvent.Left;
 			if(canMove(curX - 1, curY)) {
-				curX--;
+				if(thisEvent != lastEvent) {
+					curX--;
+				}
 			}
+			Display.input.setLastEvent(thisEvent);
 			return true;
 			
 		} else if(keys[KeyEvent.VK_RIGHT]) {
+			thisEvent = IrisEvent.Right;
 			if(canMove(curX + 1, curY)) {
-				curX++;
+				if(thisEvent != lastEvent) {
+					curX++;
+				}
 			}
+			Display.input.setLastEvent(thisEvent);
 			return true;
-			
 		} else if(keys[KeyEvent.VK_DOWN]) {
+			thisEvent = IrisEvent.Down;
 			if(canMove(curX, curY + 1)) {
-				curY++;
-				return true;
+				if(thisEvent != lastEvent) {
+					curY++;
+				}
 			}
-			return false;
-			
-		} else if(keys[KeyEvent.VK_SPACE] || keys[KeyEvent.VK_UP]) {
-			currShape.testRot(curX, curY);
-			
+			Display.input.setLastEvent(thisEvent);
 			return true;
+		} else if(keys[KeyEvent.VK_SPACE] || keys[KeyEvent.VK_UP]) {
+			thisEvent = IrisEvent.Rotate;
+			if(thisEvent != lastEvent) {
+				currShape.testRot(curX, curY);
+			}
 			
-		} else if(keys[KeyEvent.VK_CONTROL]) {
+			Display.input.setLastEvent(thisEvent);
 			return true;
 		}
 		
 		return false;
 	}
-
 }
