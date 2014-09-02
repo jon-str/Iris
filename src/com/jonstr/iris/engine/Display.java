@@ -21,7 +21,7 @@ public class Display extends Canvas {
 	private final int height;
 	private String windowTitle;
 	
-	private InputHandler input;
+	private static InputHandler input;
 	
 	private BufferedImage image;
 	private int[] pixels;
@@ -88,7 +88,7 @@ public class Display extends Canvas {
 	
 	public int getPixel(int x, int y) { return frameBuffer.getPixel(x, y); }
 	
-	public boolean[] getKeys() { return input.keys; }
+	public static boolean[] getKeys() { return input.keys; }
 	
 	public void clear() { frameBuffer.fill(0xFF000000); }
 	public void clear(int color) { frameBuffer.fill(color); }
