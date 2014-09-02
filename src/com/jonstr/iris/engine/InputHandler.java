@@ -5,18 +5,30 @@ import java.awt.event.KeyListener;
 
 public class InputHandler implements KeyListener {
 
-	public boolean[] keys;
-	private boolean keyDelay = false;
+	public enum IrisEvent {
+		NoEvent,
+		Left,
+		Right,
+		Down,
+		Rotate
+	};
 	
-	private boolean keyHeld;
+	public boolean[] keys;
+	
+	IrisEvent lastEvent;
 	
 	public InputHandler() {
 		keys = new boolean[65536];
-		keyDelay = true;
-		keyHeld = false;
+		lastEvent = IrisEvent.NoEvent;
 	}
 	
-	public void setKeyDelay(boolean value) { this.keyDelay = value; }
+	public void setLastEvent(IrisEvent lastEvent) {
+		this.lastEvent = lastEvent;
+	}
+	
+	public IrisEvent getLastEvent() {
+		return this.lastEvent;
+	}
 	
 	@Override
 	public void keyTyped(KeyEvent e) {
@@ -24,20 +36,9 @@ public class InputHandler implements KeyListener {
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		if(keyDelay) {
-			try {
-				Thread.sleep(25);
-			} catch (InterruptedException e1) {
-				e1.printStackTrace();
-			}
-		}
-		
-		if(!keyHeld) {
-			keyHeld = true;
-			int code = e.getKeyCode();
-			if(code > 0 && code  < keys.length) {
-				keys[code] = true;
-			}
+		int code = e.getKeyCode();
+		if(code > 0 && code  < keys.length) {
+			keys[code] = true;
 		}
 	}
 
@@ -48,7 +49,13 @@ public class InputHandler implements KeyListener {
 			keys[code] = false;
 		}
 		
-		keyHeld = false;
+		lastEvent = IrisEvent.NoEvent;
+	}
+	
+	public boolean useKey(int keyCode) {
+		boolean temp = keys[keyCode];
+		keys[keyCode] = false;
+		return temp;
 	}
 
 }
