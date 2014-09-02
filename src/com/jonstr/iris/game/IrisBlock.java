@@ -20,30 +20,48 @@ public class IrisBlock {
 	private Tetrominoe blockShape;
 	private static int[] colorTable;
 	
-	private int[][] coords;
-	private int[][][] coordsTable;
+	private int[][] blockCoords;
+	private int[][][] blockCoordsTable;
+	
+	private boolean rotTog;
 	
 	public IrisBlock() {
-		coords = new int[4][2];
+		initBlockCoordsTable();
 		this.setBlockShape(Tetrominoe.NoShape);
 		
-		colorTable = new int[(Tetrominoe.NumTetrominoes).ordinal()];
 		initColorTable();
+		
+		rotTog = false;
 	}
 	
 	public IrisBlock(IrisBlock block) {
-		coords = new int[4][2];
-		this.setBlockShape(Tetrominoe.NoShape);
+		initBlockCoordsTable();
+		this.setBlockShape(block.getBlockShape());
 		
-		for(int i = 0; i < 4; ++i) {
-			this.setX(i, block.getX(i));
-			this.setY(i, block.getY(i));
-		}
+		initColorTable();
 		
-		this.blockShape = block.blockShape;
+		rotTog = false;
+	}
+	
+	private void initBlockCoordsTable() {
+		blockCoords = new int[4][2];
+		
+		blockCoordsTable = new int [][][] {
+				{ {0, 0}, {0, 0}, {0, 0}, {0, 0} },
+				{ {0, -1}, {0, 0}, {-1, 0}, {-1, 1} },
+				{ {0, -1}, {0, 0}, {1, 0}, {1, 1} },
+				{ {0, -1}, {0, 0}, {0, 1}, {0, 2} },
+				{ {-1, 0}, {0, 0}, {1, 0}, {0, 1} },
+				{ {0, 0}, {1, 0}, {0, 1}, {1, 1} },
+				{ {-1, -1}, {0, -1}, {0, 0}, {0, 1} },
+				{ {1, -1}, {0, -1}, {0, 0}, {0, 1} }
+				
+		};
 	}
 	
 	private void initColorTable() {
+		colorTable = new int[(Tetrominoe.NumTetrominoes).ordinal()];
+		
 		colorTable[Tetrominoe.NoShape.ordinal()] = 0xFF000000;
 		colorTable[Tetrominoe.ZShape.ordinal()] = 0xFF408020;
 		colorTable[Tetrominoe.SShape.ordinal()] = 0xFF80FF40;
@@ -52,18 +70,35 @@ public class IrisBlock {
 		colorTable[Tetrominoe.SquareShape.ordinal()] = 0xFF40FF00;
 		colorTable[Tetrominoe.LShape.ordinal()] = 0xFF800040;
 		colorTable[Tetrominoe.MirroredLShape.ordinal()] = 0xFF40FF40;
+		
+		colorTable[Tetrominoe.MirroredLShape.ordinal()] = colorTable[Tetrominoe.NoShape.ordinal()];
 	}
 	
-	public IrisBlock testRot() {
+	public IrisBlock testRot(int curX, int curY) {
+		
+		if(curX == 1 || curX == 7 || curY == 14 || curY == 1) return this;
+		
 		if(blockShape != Tetrominoe.SquareShape) {
 			for(int i = 0; i < 4; ++i) {
 				int x = this.getX(i);
 				int y = this.getY(i);
-				this.setX(i, -y); 
-				this.setY(i, -x);
 				
-				System.out.println("i: " + i + ", x: " + -x + ", y: " + y);
+				if(rotTog) {
+					this.setX(i, y); 
+					this.setY(i, -x);
+				} else if(!rotTog) {
+					this.setX(i, y);
+					this.setY(i, -x);
+				}
+				
+				//System.out.println("i: " + i + ", x: " + -x + ", y: " + y);
 			}
+		}
+		
+		if(rotTog) {
+			rotTog = false;
+		} else if(!rotTog) {
+			rotTog = true;
 		}
 		
 		return this;
@@ -77,7 +112,7 @@ public class IrisBlock {
 				this.setX(i, y); 
 				this.setY(i, x);
 				
-				System.out.println("i: " + i + ", x: " + -x + ", y: " + y);
+				//System.out.println("i: " + i + ", x: " + -x + ", y: " + y);
 			}
 		}
 		
@@ -116,34 +151,32 @@ public class IrisBlock {
 		return result;
 	}
 	
-	public int getX(int index) { return this.coords[index][0]; }
-	public int getY(int index) { return this.coords[index][1]; }
+	public int getX(int index) { return this.blockCoords[index][0]; }
+	public int getY(int index) { return this.blockCoords[index][1]; }
 	
 	public Tetrominoe getBlockShape() { return this.blockShape; }
 	
-	public void setX(int index, int x) { this.coords[index][0] = x; }
-	public void setY(int index, int y) { this.coords[index][1] = y; }
+	public void setX(int index, int x) { this.blockCoords[index][0] = x; }
+	public void setY(int index, int y) { this.blockCoords[index][1] = y; }
 	
 	public void setBlockShape(Tetrominoe shape) {
-		coordsTable = new int [][][] {
-				{ {0, 0}, {0, 0}, {0, 0}, {0, 0} },
-				{ {0, -1}, {0, 0}, {-1, 0}, {-1, 1} },
-				{ {0, -1}, {0, 0}, {1, 0}, {1, 1} },
-				{ {0, -1}, {0, 0}, {0, 1}, {0, 2} },
-				{ {-1, 0}, {0, 0}, {1, 0}, {0, 1} },
-				{ {0, 0}, {1, 0}, {0, 1}, {1, 1} },
-				{ {-1, -1}, {0, -1}, {0, 0}, {0, 1} },
-				{ {1, -1}, {0, -1}, {0, 0}, {0, 1} }
-				
-		};
-		
 		for(int i = 0; i < 4; ++i) {
 			for(int j = 0; j < 2; ++j) {
-				coords[i][j] = coordsTable[shape.ordinal()][i][j];
+				blockCoords[i][j] = blockCoordsTable[shape.ordinal()][i][j];
 			}
 		}
 		
 		this.blockShape = shape;
+	}
+	
+	public void setBlockShape(IrisBlock block) {
+		for(int i = 0; i < 4; ++i) {
+			for(int j = 0; j < 2; ++j) {
+				blockCoords[i][j] = block.blockCoords[i][j];
+			}
+		}
+		
+		this.blockShape = block.getBlockShape();
 	}
 	
 	public IrisBlock setRandomBlockShape() {
@@ -156,43 +189,37 @@ public class IrisBlock {
 	}
 	
 	public int getMinX() {
-		int m = coords[0][0];
+		int min = blockCoords[0][0];
 		for(int i = 0; i < 4; ++i) {
-			m = Math.min(m, coords[i][0]);
+			min = Math.min(min, blockCoords[i][0]);
 		}
-		return m;
+		return min;
 	}
 	
 	public int getMaxX() {
-		int m = coords[0][0];
+		int max = blockCoords[0][0];
 		for(int i = 0; i < 4; ++i) {
-			m = Math.max(m, coords[i][0]);
+			max = Math.max(max, blockCoords[i][0]);
 		}
-		return m;
+		return max;
 	}
 	
 	public int getMinY() {
-		int m = coords[0][1];
+		int min = blockCoords[0][1];
 		for(int i = 0; i < 4; ++i) {
-			m = Math.min(m, coords[i][1]);
+			min = Math.min(min, blockCoords[i][1]);
 		}
-		return m;
+		return min;
 	}
 	
 	public int getMaxY() {
-		int m = coords[0][1];
+		int max = blockCoords[0][1];
 		for(int i = 0; i < 4; ++i) {
-			m = Math.max(m, coords[i][1]);
+			max = Math.max(max, blockCoords[i][1]);
 		}
-		return m;
+		return max;
 	}
 	
-	public int getBlockColor() {
-		return colorTable[blockShape.ordinal()];
-	}
-	
-	public static int getBlockColor(Tetrominoe shape) {
-		return colorTable[shape.ordinal()];
-	}
+	public static int getBlockColor(Tetrominoe shape) {	return colorTable[shape.ordinal()]; }
 	
 }
