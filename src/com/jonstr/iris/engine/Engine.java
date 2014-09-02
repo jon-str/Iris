@@ -66,11 +66,15 @@ public class Engine implements Runnable {
 			unprocessedSeconds += passedTime / 1000000000.0;
 			boolean ticked = false;
 			while (unprocessedSeconds > secondsPerTick) {
+				if(irisComponent.handleInput(Display.getKeys())) {
+					irisComponent.update(this, false, true);
+				}
+				
 				this.update();
 				unprocessedSeconds -= secondsPerTick;
 				ticked = true;
 				tickCount++;
-				if (tickCount % 60 == 0) {
+				if (tickCount % 30 == 0) {
 					double frameTimeMilis = 1000.0 / frames;
 					System.out.println(frames + " fps, " + frameTimeMilis
 							+ " ms");
@@ -78,12 +82,7 @@ public class Engine implements Runnable {
 					frames = 0;
 					secondFlag = true;
 				}
-				if (tickCount % 1 == 0) {
-					halfSecondFlag = true;
-					if (irisComponent.handleInput(Display.getKeys())) {
-						irisComponent.update(this);
-					}
-				}
+				
 			}
 			if (ticked && throttle) {
 				this.render();
@@ -105,7 +104,7 @@ public class Engine implements Runnable {
 		// irisTesting.update();
 		// irisTesting.handleInput(display.getKeys());
 		if (secondFlag) {
-			irisComponent.update(this);
+			irisComponent.update(this, true, false);
 			secondFlag = false;
 		}
 	}
