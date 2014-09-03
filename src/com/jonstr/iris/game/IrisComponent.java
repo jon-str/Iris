@@ -43,7 +43,7 @@ public class IrisComponent extends Bitmap {
 		newShape();
 	}
 	
-	public void update(Engine engine, boolean shouldAdvance, boolean inputDraw) { /*** TODO ***/ //THIS REALLY SUCKS
+	public void update(Engine engine, boolean shouldAdvance) { /*** TODO ***/ //THIS REALLY SUCKS
 		//ADD SOME DELTA FOR THE KEY REPEAT TIME ADJUSTMENT, ALLOW
 		//RENDERER TO DRAW FIXED FRAME RATE AND REDRAW SHAPE WHEN ROTATED BUT DONT ADVANCE CLOCK
 		this.fill(0xFF000000);
@@ -51,7 +51,7 @@ public class IrisComponent extends Bitmap {
 		drawFallenShapes();
 		drawShape();
 		
-		if(inputDraw) {
+		if(this.handleInput(Display.getKeys())) {
 			drawShape();
 		} else if(shouldAdvance) {
 			if(canMove(curX, curY + 1)) {
