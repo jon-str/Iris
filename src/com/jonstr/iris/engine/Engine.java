@@ -8,6 +8,8 @@ public class Engine implements Runnable {
 
 	private double frameRate;
 	
+	private boolean dropFlag;
+	
 	private Thread thread;
 	private Display display;
 	
@@ -25,14 +27,14 @@ public class Engine implements Runnable {
 		irisComponent = new IrisComponent();
 	}
 
-	public void start() {
+	public synchronized void start() {
 		if (running) return;
 		running = true;
 		thread = new Thread(this); // ?
 		thread.start();
 	}
 
-	public void stop() {
+	public synchronized void stop() {
 		if (!running) return;
 		running = false;
 		try {
@@ -44,7 +46,8 @@ public class Engine implements Runnable {
 
 	boolean secondFlag = false;
 	boolean halfSecondFlag = false;
-
+	
+	/*
 	@Override
 	public void run() {
 		int frames = 0;
@@ -74,7 +77,7 @@ public class Engine implements Runnable {
 				unprocessedSeconds -= secondsPerTick;
 				ticked = true;
 				tickCount++;
-				if (tickCount % 30 == 0) {
+				if (tickCount % 20 == 0) {
 					double frameTimeMilis = 1000.0 / frames;
 					System.out.println(frames + " fps, " + frameTimeMilis
 							+ " ms");
@@ -99,6 +102,7 @@ public class Engine implements Runnable {
 			}
 		}
 	}
+	
 
 	public void update() {
 		// irisTesting.update();
@@ -108,15 +112,44 @@ public class Engine implements Runnable {
 			secondFlag = false;
 		}
 	}
+	*/
+	
+	public void update(boolean dropFlag) {
+		irisComponent.update(this, dropFlag);
+		if(this.dropFlag == true) {
+			this.dropFlag = false;
+		}
+	}
+	
+	@Override
+	public void run() {
+		long unprocFrames = 0;
+		dropFlag = false;
+		
+		while(isRunning()) {
+			long startTime = System.currentTimeMillis();
+			
+			update(dropFlag);
+			render();
+			
+			long endTime = System.currentTimeMillis();
+			long frameTime = endTime - startTime;
+			unprocFrames += frameTime;
+			if(unprocFrames >= 250) {
+				dropFlag = true;
+				unprocFrames = 0;
+			}
+			System.out.println(frameTime + " ms");
+		}
+	}
 
 	public void render() {
-		if (!isRunning())
-			return;
+		if (!isRunning()) return;
+		
 		display.clear();
 		{
 			// frameBuffer.fill(0xFF000000);
 			frameBuffer.blit(irisComponent, 8, 8);
-			// frameBuffer.blit(irisGrid, 8, 8);
 		}
 		display.swapBuffers();
 	}
