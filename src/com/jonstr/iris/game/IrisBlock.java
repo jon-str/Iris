@@ -25,7 +25,7 @@ public class IrisBlock {
 	
 	public IrisBlock() {
 		initBlockCoordsTable();
-		this.setBlockShape(Tetrominoe.NoShape);
+		this.setRandomBlockShape();
 		
 		initColorTable();
 		
@@ -81,8 +81,6 @@ public class IrisBlock {
 		colorTable[Tetrominoe.SquareShape.ordinal()] = 0xFF40FF00;
 		colorTable[Tetrominoe.LShape.ordinal()] = 0xFF800040;
 		colorTable[Tetrominoe.MirroredLShape.ordinal()] = 0xFF40FF40;
-		
-		colorTable[Tetrominoe.MirroredLShape.ordinal()] = colorTable[Tetrominoe.NoShape.ordinal()];
 	}
 	
 	public IrisBlock testRot(int curX, int curY) {
