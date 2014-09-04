@@ -6,7 +6,7 @@ public class MainComponent {
 	
 	private static final int WINDOW_WIDTH = 480;
 	private static final int WINDOW_HEIGHT = 594;
-	private static final String WINDOW_TITLE = "IRIS_0_0.001";
+	private static final String WINDOW_TITLE = "IRIS_0_0.850 pre-alpha";
 	
 	private Engine engine;
 	
