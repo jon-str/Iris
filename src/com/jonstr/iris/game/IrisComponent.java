@@ -25,6 +25,9 @@ public class IrisComponent extends Bitmap {
 	
 	private Tetrominoe[] grid;
 	private IrisBlock currShape;
+	public IrisBlock nextShape;
+	
+	public Bitmap nextBlockGrid;
 	
 	private int curX;
 	private int curY;
@@ -36,6 +39,9 @@ public class IrisComponent extends Bitmap {
 		
 		grid = new Tetrominoe[gridWidth * gridHeight];
 		currShape = new IrisBlock();
+		nextShape = new IrisBlock().setRandomBlockShape();
+		
+		nextBlockGrid = new Bitmap(((blockSizeSquared) * 5) + 1, ((blockSizeSquared) * 5) + 1);
 		
 		numLinesRemoved = 0;
 		
@@ -49,6 +55,7 @@ public class IrisComponent extends Bitmap {
 		this.fill(0xFF000000);
 		drawGridLines();
 		drawFallenShapes();
+		drawNextShape(nextBlockGrid, 1, 1);
 		drawShape();
 		
 		//System.out.println(curX + " " + curY);
@@ -158,9 +165,10 @@ public class IrisComponent extends Bitmap {
 	}
 	
 	private void newShape() {
-		currShape.setRandomBlockShape();
+		currShape.copy(nextShape);
 		curX = gridWidth / 2 - 1;
 		curY = currShape.getMaxX();
+		nextShape.setRandomBlockShape();
 	}
 	
 	private void drawCurrShape(int column, int row) {
@@ -178,10 +186,17 @@ public class IrisComponent extends Bitmap {
 		}
 	}
 	
-	private void drawBlock(int shapeX, int shapeY) {
-		for(int y = 0; y < blockSizeSquared; ++y) {
-			for(int x = 0; x < blockSizeSquared; ++x) {
-				
+	public void drawNextShape(Bitmap bitmap, int column, int row) {
+		//drawGridLines();
+		
+		int xPix = ((column * blockSizeSquared)) + blockSizeSquared * 2;
+		int yPix = ((row * blockSizeSquared) + 1) + blockSizeSquared * 2;
+	
+		for(int y = yPix; y < yPix + blockSizeSquared - 1; ++y) {
+			for(int x = xPix; x < xPix + blockSizeSquared; ++x) {
+				if(!isGridLine(x, y)) {
+					bitmap.setPixel(x, y, IrisBlock.getBlockColor(nextShape.getBlockShape()));
+				}
 			}
 		}
 	}
@@ -225,6 +240,16 @@ public class IrisComponent extends Bitmap {
 			for(int x = 0; x < this.getWidth(); x++) {
 				if(isGridLine(x, y)) {
 					this.setPixel(x, y, gridLineColor);
+				}
+			}
+		}
+	}
+	
+	public void drawGridLines(Bitmap bitmap) {
+		for(int y = 0; y < bitmap.getHeight(); y++) {
+			for(int x = 0; x < bitmap.getWidth(); x++) {
+				if(isGridLine(x, y)) {
+					bitmap.setPixel(x, y, gridLineColor);
 				}
 			}
 		}
