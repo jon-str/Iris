@@ -43,7 +43,7 @@ public class IrisComponent extends Bitmap {
 		newShape();
 	}
 	
-	public void update(Engine engine, boolean shouldAdvance) { /*** TODO ***/ //THIS REALLY SUCKS
+	public void update(Engine engine, boolean dropFlag, boolean inputDraw) { /*** TODO ***/ //THIS REALLY SUCKS
 		//ADD SOME DELTA FOR THE KEY REPEAT TIME ADJUSTMENT, ALLOW
 		//RENDERER TO DRAW FIXED FRAME RATE AND REDRAW SHAPE WHEN ROTATED BUT DONT ADVANCE CLOCK
 		this.fill(0xFF000000);
@@ -51,20 +51,21 @@ public class IrisComponent extends Bitmap {
 		drawFallenShapes();
 		drawShape();
 		
-		if(this.handleInput(Display.getKeys())) {
+		//System.out.println(curX + " " + curY);
+		System.out.println(currShape.getBlockShape());
+		
+		if(inputDraw) {
 			drawShape();
-		} else if(shouldAdvance) {
+		}
+		if(dropFlag) {
 			if(canMove(curX, curY + 1)) {
-				drawShape();
 				curY++;
+				drawShape();
 			} else {
-				for(int i = 0; i < 4; ++i) {
-					System.out.println("Couldn't move x: " + (this.currShape.getX(i) + curX) + ", y: " + (this.currShape.getY(i) + curY));
-				}
 				drawShape();
 				finishFalling(engine);
-				removeLines();
 				drawFallenShapes();
+				removeLines();
 				newShape();
 				return;
 			}
@@ -159,7 +160,7 @@ public class IrisComponent extends Bitmap {
 	private void newShape() {
 		currShape.setRandomBlockShape();
 		curX = gridWidth / 2 - 1;
-		curY = 0;
+		curY = currShape.getMaxX();
 	}
 	
 	private void drawCurrShape(int column, int row) {
@@ -173,6 +174,14 @@ public class IrisComponent extends Bitmap {
 				if(!isGridLine(x, y)) {
 					this.setPixel(x, y, IrisBlock.getBlockColor(currShape.getBlockShape()));
 				}
+			}
+		}
+	}
+	
+	private void drawBlock(int shapeX, int shapeY) {
+		for(int y = 0; y < blockSizeSquared; ++y) {
+			for(int x = 0; x < blockSizeSquared; ++x) {
+				
 			}
 		}
 	}
