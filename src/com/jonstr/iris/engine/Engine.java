@@ -115,7 +115,11 @@ public class Engine implements Runnable {
 	*/
 	
 	public void update(boolean dropFlag) {
-		irisComponent.update(this, dropFlag);
+		if(irisComponent.handleInput(Display.getKeys())) {
+			irisComponent.update(this, false, true);
+		}
+		
+		irisComponent.update(this, dropFlag, false);
 		if(this.dropFlag == true) {
 			this.dropFlag = false;
 		}
@@ -125,6 +129,8 @@ public class Engine implements Runnable {
 	public void run() {
 		long unprocFrames = 0;
 		dropFlag = false;
+		
+		display.requestFocus();
 		
 		while(isRunning()) {
 			long startTime = System.currentTimeMillis();
@@ -139,7 +145,7 @@ public class Engine implements Runnable {
 				dropFlag = true;
 				unprocFrames = 0;
 			}
-			System.out.println(frameTime + " ms");
+			//System.out.println(frameTime + " ms");
 		}
 	}
 
