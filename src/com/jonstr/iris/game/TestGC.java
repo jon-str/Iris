@@ -15,12 +15,13 @@ public class TestGC extends GridComponent {
 	
 	@Override
 	public void update() {
-		blockCol += 255;
+		blockCol += 1;
 		//if(blockCol > 0xFFFFFFFF) blockCol = 0;
 		
 		for(int row = 0; row < gridHeight; ++row) {
 			for(int col = 0; col < this.gridWidth; ++col) {
 				if(row % 2 == 0 || col % 2 == 0) {
+					blockCol = blockCol | 0xFF000000;
 					this.drawBlock(col, row, blockCol);
 				}
 			}
