@@ -11,7 +11,7 @@ public class MainComponent {
 	private Engine engine;
 	
 	public MainComponent() {
-		engine = new Engine(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE, 30.0);
+		engine = new Engine(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE);
 	}
 	
 	public static void main(String args[]) {
