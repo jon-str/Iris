@@ -1,37 +1,31 @@
 package com.jonstr.iris.engine;
 
-import com.jonstr.iris.game.GridComponent;
-import com.jonstr.iris.game.IrisComponent;
-import com.jonstr.iris.game.TestGC;
+import com.jonstr.iris.game.IrisMainComponent;
+import com.jonstr.iris.game.IrisNextShapeComponent;
 import com.jonstr.iris.rendering.Bitmap;
 
 public class Engine implements Runnable {
+	public static InputHandler input;
+	
 	private boolean running;
-
-	private double frameRate;
 	
 	private boolean dropFlag;
 	
 	private Thread thread;
 	private Display display;
-	
 	private Bitmap frameBuffer;
 	
-	private IrisComponent irisComponent;
-	
-	TestGC tgc;
+	IrisMainComponent irisGame;
+	IrisNextShapeComponent irisNextShapeGrid;
 
-	public Engine(int window_width, int window_height, String window_title,
-			double frameRate) {
+	public Engine(int window_width, int window_height, String window_title) {
 		this.display = new Display(window_width, window_height, window_title);
-		this.frameRate = frameRate;
+		input = new InputHandler();
+		display.addKeyListener(input);
 		frameBuffer = display.getFrameBuffer();
-
 		
-		irisComponent = new IrisComponent();
-		
-//		tgc = new TestGC(2, display.getWidth() / 2 - 1, display.getWidth() / 2 - 1, 0xFF00FFFF);
-		tgc = new TestGC(6, 8, 16, 0xFFFF00FF);
+		irisGame = new IrisMainComponent(6, 8, 16, 0xFFFF00FF);
+		irisNextShapeGrid = new IrisNextShapeComponent(irisGame, 6, 5, 5, 0xFFFF00FF);
 	}
 
 	public synchronized void start() {
@@ -51,21 +45,10 @@ public class Engine implements Runnable {
 		}
 	}
 	
-//	public void update(boolean dropFlag) {
-//		if(irisComponent.handleInput(Display.getKeys())) {
-//			irisComponent.update(this, false, true);
-//		}
-//		
-//		irisComponent.update(this, dropFlag, false);
-//		if(this.dropFlag == true) {
-//			this.dropFlag = false;
-//		}
-//	}
-	
 	@Override
 	public void run() {
+//		int frames = 0;
 		long unprocFrames = 0;
-		int frames = 0;
 		
 		dropFlag = false;
 		
@@ -83,14 +66,12 @@ public class Engine implements Runnable {
 			unprocFrames += frameTime;
 			if(unprocFrames >= 1000000000L) {
 				//System.out.println(unprocFrames + " nanos, " + frames + " fps?");
-				
 				dropFlag = true;
-				
 				unprocFrames = 0;
-				frames = 0;
+//				frames = 0;
 			} else {
-				frames++;
 				dropFlag = false;
+//				frames++;
 			}
 		}
 	}
@@ -98,31 +79,21 @@ public class Engine implements Runnable {
 	
 	
 	public void update() {
-		tgc.update(this, false, tgc.handleInput(Display.getKeys()));
-		tgc.update(this, dropFlag, false);
+		irisGame.update(this, false, irisGame.handleInput(getKeys()));
+		irisGame.update(this, dropFlag, false);
 	}
 
 	public void render() {
 		if (!isRunning()) return;
-		//irisComponent.nextBlockGrid.fill(0xFF000000);
 		
-		tgc.render();
+		irisGame.render();
+		irisNextShapeGrid.render();
 		
 		display.clear();
 		{
 			frameBuffer.fill(0xFF000000);
-			frameBuffer.blit(tgc, 8, 8);
-			
-//			frameBuffer.blit(irisComponent, 8, 8);
-//			{
-//				irisComponent.drawGridLines(irisComponent.nextBlockGrid);
-//				for(int i = 0; i < 4; ++i) {
-//					int x = irisComponent.nextShape.getX(i);
-//					int y = irisComponent.nextShape.getY(i);
-//					irisComponent.drawNextShape(irisComponent.nextBlockGrid, x, y);
-//				}
-//			}
-//			frameBuffer.blit(irisComponent.nextBlockGrid, 51 * 6, 67 * 6 + 2);
+			frameBuffer.blit(irisGame, 8, 8);
+			frameBuffer.blit(irisNextShapeGrid, 8 + (6 * (6 * 8)) + 8, 8 + (6 * (6 * 11)));
 		}
 		display.swapBuffers();
 	}
@@ -138,4 +109,6 @@ public class Engine implements Runnable {
 	public Display getDisplay() {
 		return display;
 	}
+	
+	public static boolean[] getKeys() { return input.keys; }
 }
