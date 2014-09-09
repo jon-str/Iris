@@ -1,6 +1,5 @@
 package com.jonstr.iris.game;
 
-import com.jonstr.iris.engine.Engine;
 import com.jonstr.iris.rendering.Bitmap;
 
 public abstract class GridComponent extends Bitmap {
@@ -59,7 +58,5 @@ public abstract class GridComponent extends Bitmap {
 		}
 	}
 	
-	public abstract void update();
-	public abstract void update(Engine engine, boolean flag1, boolean flag2);
 	public abstract void render();
 }
