@@ -1,26 +1,57 @@
 package com.jonstr.iris.rendering;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
+
 public class Bitmap {
 	
-	private int width;
-	private int height;
-	
-	private int totalPixels;
-	private int pixels[];
+	protected int width;
+	protected int height;
+	protected int totalPixels;
+	protected int pixels[];
 
 	public Bitmap(int width, int height) {
 		this.width = width;
 		this.height = height;
-		this.totalPixels = this.width * this.height;
-		
-		pixels = new int[this.totalPixels];
+		totalPixels = this.width * this.height;
+		pixels = new int[totalPixels];
 	}
 	
 	public Bitmap(Bitmap bitmap) {
-		this.width = bitmap.getWidth();
-		this.height = bitmap.getHeight();
-		this.pixels = bitmap.getPixels();
-		this.totalPixels = bitmap.getTotalPixels();
+		width = bitmap.getWidth();
+		height = bitmap.getHeight();
+		pixels = bitmap.getPixels();
+		totalPixels = bitmap.getTotalPixels();
+	}
+	
+	public Bitmap(String fileName) {
+		BufferedImage img = null;
+		try {
+			img = ImageIO.read(new File(fileName));
+			width = img.getWidth();
+			height = img.getHeight();
+			totalPixels = width * height;
+			pixels = new int[totalPixels];
+			img.getRGB(0, 0, width, height, pixels, 0, width);			
+		} catch (IOException e) {
+		}
+	}
+	
+	public static Bitmap loadBitmap(String fileName) {
+		BufferedImage img = null;
+		Bitmap result = null;
+		try {
+			img = ImageIO.read(new File(fileName));
+			int w = img.getWidth();
+			int h = img.getHeight();
+			result = new Bitmap(w, h);
+			img.getRGB(0, 0, w, h, result.pixels, 0, w);			
+		} catch (IOException e) {
+		}
+		return result;
 	}
 	
 	public Bitmap initAsSolid(int color) {
@@ -72,10 +103,15 @@ public class Bitmap {
 	public int[] getPixels() { return this.pixels; }
 	public int getTotalPixels() { return this.totalPixels; }
 	
+	public void setWidth(int width) {
+		this.width = width;
+	}
+
 	public int getPixel(int i) { return this.pixels[i]; }
 	public int getPixel(int x, int y) { return this.getPixel(x + y * this.getWidth()); }
 	
 	public void setPixel(int i, int value) { this.pixels[i] = value; }
 	public void setPixel(int x, int y, int value) { this.setPixel(x + y * this.getWidth(), value); }
+	
 }
 
