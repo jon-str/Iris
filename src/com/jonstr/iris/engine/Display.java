@@ -21,8 +21,6 @@ public class Display extends Canvas {
 	private final int height;
 	private String windowTitle;
 	
-	public static InputHandler input;
-	
 	private BufferedImage image;
 	private int[] pixels;
 	private Bitmap frameBuffer;
@@ -31,9 +29,6 @@ public class Display extends Canvas {
 		this.width = width;
 		this.height = height;
 		this.windowTitle = windowTitle;
-		
-		input = new InputHandler();
-		this.addKeyListener(input);
 		
 		Dimension size = new Dimension(this.width, this.height);
 		this.setSize(size);
@@ -87,8 +82,6 @@ public class Display extends Canvas {
 	public void setPixel(int x, int y, int color) { frameBuffer.setPixel(x, y, color); }
 	
 	public int getPixel(int x, int y) { return frameBuffer.getPixel(x, y); }
-	
-	public static boolean[] getKeys() { return input.keys; }
 	
 	public void clear() { frameBuffer.fill(0xFF000000); }
 	public void clear(int color) { frameBuffer.fill(color); }
