@@ -13,7 +13,7 @@ public abstract class GridComponent extends Bitmap {
 	protected final int gridLineColor; //0xFF0080FF;
 	
 	protected int blockDefaultColor;
-
+	
 	public GridComponent(int blockSize, int gridWidth, int gridHeight, int gridLineColor) {
 		super(((blockSize * blockSize) * gridWidth) + 1, ((blockSize * blockSize) * gridHeight) + 1);
 		
@@ -29,6 +29,12 @@ public abstract class GridComponent extends Bitmap {
 		blockDefaultColor = 0xFF00FFFF;
 	}
 	
+	private boolean isGridLine(int x, int y) {
+		if(x % (blockSize * blockSize) == 0 || y % (blockSize * blockSize) == 0) return true;
+
+		return false;
+	}
+	
 	public void drawGridLines() {
 		for(int y = 0; y < this.getHeight(); y++) {
 			for(int x = 0; x < this.getWidth(); x++) {
@@ -37,12 +43,6 @@ public abstract class GridComponent extends Bitmap {
 				}
 			}
 		}
-	}
-	
-	private boolean isGridLine(int x, int y) {
-		if(x % (blockSize * blockSize) == 0 || y % (blockSize * blockSize) == 0) return true;
-
-		return false;
 	}
 	
 	public void drawBlock(int col, int row, int blockColor) {
@@ -59,4 +59,13 @@ public abstract class GridComponent extends Bitmap {
 	}
 	
 	public abstract void render();
+	
+	public int getBlockSize() { return blockSize; }
+	public int getBlockSizeSquared() { return blockSizeSquared; }
+	
+	public int getGridWidth() { return gridWidth; }
+	public int getGridHeight() { return gridHeight; }
+	public int getGridSize() { return gridSize; }
+	public int getGridLineColor() { return gridLineColor; }
+
 }
