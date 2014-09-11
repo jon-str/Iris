@@ -3,6 +3,7 @@ package com.jonstr.iris.rendering;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 
 import javax.imageio.ImageIO;
 
@@ -12,6 +13,8 @@ public class Bitmap {
 	protected int height;
 	protected int totalPixels;
 	protected int pixels[];
+	
+	public static Bitmap loadBitmap(String fileName) { return new Bitmap(fileName); }
 
 	public Bitmap(int width, int height) {
 		this.width = width;
@@ -37,81 +40,55 @@ public class Bitmap {
 			pixels = new int[totalPixels];
 			img.getRGB(0, 0, width, height, pixels, 0, width);			
 		} catch (IOException e) {
+			e.printStackTrace();
 		}
-	}
-	
-	public static Bitmap loadBitmap(String fileName) {
-		BufferedImage img = null;
-		Bitmap result = null;
-		try {
-			img = ImageIO.read(new File(fileName));
-			int w = img.getWidth();
-			int h = img.getHeight();
-			result = new Bitmap(w, h);
-			img.getRGB(0, 0, w, h, result.pixels, 0, w);			
-		} catch (IOException e) {
-		}
-		return result;
 	}
 	
 	public Bitmap initAsSolid(int color) {
-		for(int i = 0; i < this.totalPixels; ++i) {
-			this.setPixel(i, color);
-		}
-		
+		Arrays.fill(pixels, color);
 		return this;
 	}
 	
-	public Bitmap initAsWhite() {
-		return this.initAsSolid(0xFFFFFFFF);
-	}
+	public Bitmap initAsWhite() { return initAsSolid(0xFFFFFFFF); }
+	public Bitmap initAsBlack() { return initAsSolid(0xFF000000); }
 	
-	public Bitmap initAsBlack() {
-		return this.initAsSolid(0xFF000000);
-	}
+	public Bitmap initAsImage(String fileName) { return Bitmap.loadBitmap(fileName); } 
 	
 	public void blit(Bitmap bitmap, int xOffs, int yOffs) {
 		for(int y = 0; y < bitmap.getHeight(); ++y) {
 			int yPix = y + yOffs;
-			if(yPix < 0 || yPix >= this.getHeight()) continue;
-				
+			if(yPix < 0 || yPix >= height) continue;
+			
 			for(int x = 0; x < bitmap.getWidth(); ++x) {
 				int xPix = x + xOffs;
-				if(xPix < 0 || xPix >= this.getWidth()) continue;
+				if(xPix < 0 || xPix >= width) continue;
 				
-				int src = bitmap.pixels[x + y * bitmap.getWidth()];
-				this.pixels[xPix + yPix * this.getWidth()] = src;
+				int src = bitmap.getPixel(x + y * bitmap.getWidth());
+				pixels[xPix + yPix * width] = src;
 			}
 		}
 	}
+	
+	public void fill(int color) { Arrays.fill(pixels, color); }
 	
 	public void fill(int xMin, int yMin, int xMax, int yMax, int color) {
-		for(int y = yMin; y < yMax; ++y) {
-			for(int x = xMin; x < xMax; ++x) {
-				this.pixels[x + y * this.getWidth()] = color;
-			}
-		}
+		yMax -= 1;
+		int from = (xMin + yMin * width);
+		int to = (xMax + yMax * width);	
+		Arrays.fill(pixels, from, to, color);
 	}
 	
-	public void fill(int color) {
-		this.fill(0, 0, this.getWidth(), this.getHeight(), color);
-	}
+	public int getWidth() { return width; }
+	public int getHeight() { return height; }
 	
-	public int getWidth() { return this.width; }
-	public int getHeight() { return this.height; }
-	
-	public int[] getPixels() { return this.pixels; }
-	public int getTotalPixels() { return this.totalPixels; }
-	
-	public void setWidth(int width) {
-		this.width = width;
-	}
+	public int[] getPixels() { return pixels; }
+	public int getTotalPixels() { return totalPixels; }
 
-	public int getPixel(int i) { return this.pixels[i]; }
-	public int getPixel(int x, int y) { return this.getPixel(x + y * this.getWidth()); }
+	public int getPixel(int i) { return pixels[i]; }
+	public int getPixel(int x, int y) { return getPixel(x + y * width); }
 	
-	public void setPixel(int i, int value) { this.pixels[i] = value; }
-	public void setPixel(int x, int y, int value) { this.setPixel(x + y * this.getWidth(), value); }
+	public void setPixel(int i, int value) { pixels[i] = value; }
+	public void setPixel(int x, int y, int value) { setPixel(x + y * width, value); }
 	
 }
 
