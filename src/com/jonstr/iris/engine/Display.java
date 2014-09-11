@@ -75,9 +75,7 @@ public class Display extends Canvas {
 		bs.show();
 	} 	
 	
-	public void swapBuffers() { 
-		this.render();
-	}
+	public void swapBuffers() { this.render(); }
 	
 	public void setPixel(int x, int y, int color) { frameBuffer.setPixel(x, y, color); }
 	
