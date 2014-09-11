@@ -12,9 +12,12 @@ public abstract class GridComponent extends Bitmap {
 	protected final int gridSize; //gridWidth * gridHeight;
 	protected final int gridLineColor; //0xFF0080FF;
 	
+	protected final int xAbsolute;
+	protected final int yAbsolute;
+	
 	protected int blockDefaultColor;
 	
-	public GridComponent(int blockSize, int gridWidth, int gridHeight, int gridLineColor) {
+	public GridComponent(int blockSize, int gridWidth, int gridHeight, int gridLineColor, int xAbs, int yAbs) {
 		super(((blockSize * blockSize) * gridWidth) + 1, ((blockSize * blockSize) * gridHeight) + 1);
 		
 		this.blockSize = blockSize;
@@ -24,6 +27,9 @@ public abstract class GridComponent extends Bitmap {
 		this.gridHeight = gridHeight;
 		this.gridSize = gridWidth * gridHeight;
 		this.gridLineColor = gridLineColor;
+		
+		this.xAbsolute = xAbs;
+		this.yAbsolute = yAbs;
 		
 		//not arg
 		blockDefaultColor = 0xFF00FFFF;
@@ -67,5 +73,8 @@ public abstract class GridComponent extends Bitmap {
 	public int getGridHeight() { return gridHeight; }
 	public int getGridSize() { return gridSize; }
 	public int getGridLineColor() { return gridLineColor; }
+	
+	public int getXAbsolute() { return xAbsolute; }
+	public int getYAbsolute() { return yAbsolute; }
 
 }

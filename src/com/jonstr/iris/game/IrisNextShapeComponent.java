@@ -4,8 +4,9 @@ public class IrisNextShapeComponent extends GridComponent {
 
 	private IrisMainComponent parent;
 
-	public IrisNextShapeComponent(IrisMainComponent imc, int blockSize, int gridWidth, int gridHeight, int gridLineColor) {
-		super(blockSize, gridWidth, gridHeight, gridLineColor);
+	public IrisNextShapeComponent(IrisMainComponent imc, int blockSize, int gridWidth, 
+			                      int gridHeight, int gridLineColor, int xAbs, int yAbs) {
+		super(blockSize, gridWidth, gridHeight, gridLineColor, xAbs, yAbs);
 		parent = imc;
 	}
 

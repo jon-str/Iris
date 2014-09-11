@@ -17,9 +17,8 @@ public class IrisMainComponent extends GridComponent {
 
 	int numLinesRemoved = 0;
 
-	public IrisMainComponent(int blockSize, int gridWidth, int gridHeight,
-			int gridLineColor) {
-		super(blockSize, gridWidth, gridHeight, gridLineColor);
+	public IrisMainComponent(int blockSize, int gridWidth, int gridHeight, int gridLineColor, int xAbs, int yAbs) {
+		super(blockSize, gridWidth, gridHeight, gridLineColor, xAbs, yAbs);
 
 		grid = new Tetrominoe[this.gridWidth * this.gridHeight];
 		currShape = new IrisBlock();
@@ -125,6 +124,8 @@ public class IrisMainComponent extends GridComponent {
 
 	private void setShape(Tetrominoe shape, int col, int row) { grid[col + row * gridWidth] = shape; }
 	
+	public IrisBlock getNextShape() { return nextShape; }
+	
 	private boolean lineUsed(int row) {
 		for(int col = 0; col < gridWidth; col++) {
 			if(getShape(col, row) == noShape()) {
@@ -166,8 +167,6 @@ public class IrisMainComponent extends GridComponent {
 			grid[i] = noShape();
 		}
 	}
-
-	public IrisBlock getNextShape() { return nextShape; }
 	
 	public boolean handleInput(boolean[] keys) {
 		IrisEvent lastEvent = Engine.input.getLastEvent();
