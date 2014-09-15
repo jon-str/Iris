@@ -35,6 +35,11 @@ public abstract class GridComponent extends Bitmap {
 		blockDefaultColor = 0xFF00FFFF;
 	}
 	
+	protected void prepare() {
+		this.fill(0xFF000000);
+		this.drawGridLines();
+	}
+	
 	private boolean isGridLine(int x, int y) {
 		if(x % (blockSize * blockSize) == 0 || y % (blockSize * blockSize) == 0) return true;
 

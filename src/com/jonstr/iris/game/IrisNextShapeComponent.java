@@ -12,8 +12,7 @@ public class IrisNextShapeComponent extends GridComponent {
 
 	@Override
 	public void render() {
-		this.fill(0xFF000000);
-		this.drawGridLines();
+		this.prepare();
 
 		for (int i = 0; i < 4; ++i) {
 			int x = 2 + parent.getNextShape().getX(i);

@@ -57,7 +57,7 @@ public class Engine implements Runnable {
 			long endTime = System.nanoTime();
 			long frameTime = endTime - startTime;
 			unprocFrames += frameTime;
-			if (unprocFrames >= 1000000000L) { // ENCAP (GAME SPEED FOR LEVELS)
+			if (unprocFrames >= 1000000000L / 2) { // ENCAP (GAME SPEED FOR LEVELS)
 				// System.out.println(unprocFrames + " nanos, " + frames + " fps");
 
 				game.setDropFlag(true);
@@ -74,6 +74,8 @@ public class Engine implements Runnable {
 	
 	private void render() {
 		if (!running) return;
+		
+		Bitmap test = game.textBox.scaleCopy(2);
 
 		game.render();
 
@@ -85,6 +87,7 @@ public class Engine implements Runnable {
 								 game.getDrawListAt(i).getXAbsolute(), 
 								 game.getDrawListAt(i).getYAbsolute());
 			}
+			frameBuffer.blit(game.textBox.getGraw(), 100, 100);
 		}
 		display.swapBuffers();
 	}

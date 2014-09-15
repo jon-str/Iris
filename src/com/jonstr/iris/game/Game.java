@@ -15,6 +15,7 @@ public class Game {
 	private IrisMainComponent irisGame;
 	private IrisNextShapeComponent irisNextShapeGrid;
 	private IrisScoreComponent irisScore;
+	public IrisScoreComponent textBox;
 	
 	private GridComponent[] drawList;
 	
@@ -24,11 +25,16 @@ public class Game {
 		irisNextShapeGrid = new IrisNextShapeComponent(irisGame, irisGame.getBlockSize(), 5, 5, 
 				                                       irisGame.getGridLineColor(), 304, 404);
 		irisScore = new IrisScoreComponent(400, 300);
+		textBox = new IrisScoreComponent(200, 200);
+		textBox.draw("ABC", 0, 0, 0xFF00FF00);
+		//textBox.scale(3);
 			
-		drawList = new GridComponent[3];
+		drawList = new GridComponent[2];
 		drawList[0] = irisGame;
 		drawList[1] = irisNextShapeGrid;
-		drawList[2] = irisScore;
+		//drawList[2] = irisScore;
+		//drawList[3] = textBox;
+		
 	}
 	
 	public void update(Engine engine, boolean[] keys) {
@@ -40,6 +46,8 @@ public class Game {
 		for(int i = 0; i < drawList.length; ++i) {
 			drawList[i].render();
 		}
+		
+		textBox.render();
 	}
 	
 	public void setDropFlag(boolean flag) { dropFlag = flag; }

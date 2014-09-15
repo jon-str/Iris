@@ -34,8 +34,7 @@ public class IrisMainComponent extends GridComponent {
 
 	@Override
 	public void render() {
-		this.fill(0xFF000000);
-		this.drawGridLines();
+		this.prepare();
 
 		drawFallenShapes();
 		drawCurrShape();
@@ -156,7 +155,7 @@ public class IrisMainComponent extends GridComponent {
 		for(int y = 0; y < this.gridHeight; ++y) {
 			if(lineUsed(y)) {
 				numLinesRemoved++;
-				System.out.println("ROW " + y + " USED!!!");
+				System.out.println("SCORE: " + numLinesRemoved);
 				shiftlineDown(y);
 			}
 		}
