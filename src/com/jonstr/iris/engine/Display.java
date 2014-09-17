@@ -1,7 +1,7 @@
 package com.jonstr.iris.engine;
 
-import java.awt.BorderLayout;
 import java.awt.Canvas;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.image.BufferStrategy;
@@ -9,7 +9,6 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 
 import javax.swing.JFrame;
-import javax.swing.JPanel;
 
 import com.jonstr.iris.rendering.Bitmap;
 
@@ -46,10 +45,12 @@ public class Display extends Canvas {
 	
 	public void createWindow(String title) {
 		JFrame frame = new JFrame(title);
-		JPanel panel = new JPanel(new BorderLayout());
-		panel.add(this, BorderLayout.CENTER);
 		
-		frame.setContentPane(panel);
+		// JPanel panel = new JPanel(new BorderLayout()); /* WHITE BORDER APPEARING IN WINDOWS ... ??? */
+		// panel.add(this, BorderLayout.CENTER);
+		// frame.setContentPane(panel);
+		
+		frame.add(this);
 		frame.pack();
 		frame.setLocationRelativeTo(null);
 		frame.setResizable(false);
@@ -57,7 +58,7 @@ public class Display extends Canvas {
 		frame.setVisible(true);
 	}
 	
-	public void render() {
+	public void render(int score) {
 		BufferStrategy bs = this.getBufferStrategy();
 		if(bs == null) {
 			this.createBufferStrategy(2);
@@ -69,13 +70,15 @@ public class Display extends Canvas {
 		}
 		
 		Graphics g = bs.getDrawGraphics();
-		g.fillRect(0, 0, this.getWidth(), this.getHeight());
+		//g.fillRect(0, 0, this.getWidth(), this.getHeight());
 		g.drawImage(image, 0, 0, this.getWidth(), this.getHeight(), null);
+		g.setColor(Color.CYAN);
+		g.drawString("SCORE: " + score, 302, 200);
 		g.dispose();
 		bs.show();
 	} 	
 	
-	public void swapBuffers() { this.render(); }
+	public void swapBuffers(int score) { this.render(score); }
 	
 	public void setPixel(int x, int y, int color) { frameBuffer.setPixel(x, y, color); }
 	
