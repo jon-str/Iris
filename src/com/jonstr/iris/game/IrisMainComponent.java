@@ -51,6 +51,8 @@ public class IrisMainComponent extends GridComponent {
 			}
 		}
 	}
+	
+	public int getNumLinesRemoved() { return numLinesRemoved; }
 
 	private boolean canMove(int newX, int newY) {
 		if (currShape.getMaxY() + newY >= this.gridHeight) {

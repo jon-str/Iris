@@ -39,6 +39,15 @@ public class Bitmap {
 		pixels = bitmap.getPixels();
 		totalPixels = bitmap.getTotalPixels();
 	}
+	
+	public Bitmap copy(Bitmap bitmap) {
+		width = bitmap.getWidth();
+		height = bitmap.getHeight();
+		pixels = bitmap.getPixels();
+		totalPixels = bitmap.getTotalPixels();
+		
+		return this;
+	}
 
 	public Bitmap(String fileName) {
 		BufferedImage img = null;
@@ -56,23 +65,23 @@ public class Bitmap {
 	
 	public Bitmap scaleCopy(int factor) {
 		Bitmap result = new Bitmap(width * factor, height * factor);
-		result.fill(0x00FF00FF);
+		//result.fill(0x00FF00FF);
 		for(int y = 0; y < this.height; ++y) {
-			for(int x = 0; x < this.width; ++x) {
-				int sample = pixels[x + y * width];
-				
-				for(int yy = 0; yy < factor; ++yy) {
-					int yPix = y + yy;
-					for(int xx = 0; xx < factor; ++xx) {
-						int xPix = x + xx;
-						
-						result.pixels[xPix + yPix * result.width] = sample;
-					}
-				}
+			for(int x  = 0; x < this.width; ++x) {
+				int color = this.getPixel(x, y);
+				drawScalePixel(result, factor, x, y, color);
 			}
 		}
 		
 		return result;
+	}
+	
+	private void drawScalePixel(Bitmap bitmap, int factor, int x, int y, int value) {
+		for(int yy = 0; yy < factor; ++yy) {
+			for(int xx = 0; xx < factor; ++xx) {
+				bitmap.setPixel(x + xx, y + yy, value);
+			}
+		}
 	}
 
 	public Bitmap initAsSolid(int color) {
@@ -114,18 +123,31 @@ public class Bitmap {
 		Arrays.fill(pixels, color);
 	}
 	
-	public void scale(int factor) {
-		totalPixels *= factor;
-		int[] pixArr = new int[totalPixels];
-		for(int i = 0; i < totalPixels; ++i) {
-			int sample = pixels[i % factor]; 
-			pixArr[i] = sample;
+	public void scaleBlock(int factor, int x, int y, int color) {
+		for(int yy = 0; yy < factor; ++yy) {
+			for(int xx = 0; xx < factor; ++xx) {
+				pixels[(x + xx) + (y + yy) * width] = color;
+			}
 		}
-		
-		width *= factor;
-		height *= factor;
-		
-		pixels = Arrays.copyOf(pixArr, totalPixels);
+	}
+	
+	public void scaleBlock(int arr[], int factor, int x, int y, int color) {
+		for(int yy = 0; yy < factor; ++yy) {
+			for(int xx = 0; xx < factor; ++xx) {
+				arr[(x + xx) + (y + yy) * width] = color;
+			}
+		}
+	}
+	
+	public void scale(int factor) {
+		Bitmap temp = new Bitmap(width * factor, height * factor);
+		for(int y = 0; y < height; ++y) {
+			for(int x = 0; x < width; ++x) {
+				int color = pixels[x + y * width];
+				drawScalePixel(temp, factor, x, y, color);
+			}
+		}
+		this.copy(temp);
 	}
 
 	public void fill(int xMin, int yMin, int xMax, int yMax, int color) {
@@ -148,16 +170,7 @@ public class Bitmap {
 					continue;
 
 				int src = bitmap.pixels[(x + xo) + (y + yo) * bitmap.width];
-				// System.out.println(src * col);
-				if (src >= 0) {
-					//System.out.println(src * col);
-					pixels[xPix + yPix * width] = src * col;
-				} else {
-					src /= 2;
-					src *= -1;
-					//System.out.println(src * col);
-					pixels[xPix + yPix * width] = src * col;
-				}
+				pixels[xPix + yPix * width] = src * col;
 			}
 		}
 	}
@@ -185,7 +198,7 @@ public class Bitmap {
 			if (ch < 0) continue;
 			int xx = ch % 42;
 			int yy = ch / 42;
-			draw(Art.font, x + i * 6, y, xx * 6, yy * 8, 5, 8, col);
+			draw(Art.font, x + i * 6, y, (xx * 6), (yy * 8), 5, 8, col * 2);	
 		}
 	}
 

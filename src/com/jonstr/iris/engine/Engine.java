@@ -70,12 +70,12 @@ public class Engine implements Runnable {
 		}
 	}
 
-	private void update() { game.update(this, input.keys); }
+	private void update() { 
+		game.update(this, input.keys);
+	}
 	
 	private void render() {
 		if (!running) return;
-		
-		Bitmap test = game.textBox.scaleCopy(2);
 
 		game.render();
 
@@ -87,9 +87,8 @@ public class Engine implements Runnable {
 								 game.getDrawListAt(i).getXAbsolute(), 
 								 game.getDrawListAt(i).getYAbsolute());
 			}
-			frameBuffer.blit(game.textBox.getGraw(), 100, 100);
 		}
-		display.swapBuffers();
+		display.swapBuffers(game.getScore());
 	}
 
 }
